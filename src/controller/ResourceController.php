@@ -1,6 +1,7 @@
 <?php namespace XFRM\Controller;
 defined('_XFRM_API') or exit('No direct script access allowed here.');
 
+use XFRM\Object\Pagination;
 use XFRM\Object\Resource as Resource;
 use XFRM\Util\RequestUtil as Req;
 
@@ -15,16 +16,18 @@ class ResourceController
 
     public function listResources()
     {
-        $out = [];
-
         $resources = $this->database->listResources(Req::category(), Req::page());
 
         if (is_null($resources)) {
             return NULL;
         }
 
+        $out = new \stdClass();
+        $out->pagination = new Pagination(count($resources), 10, (Req::page() - 1) * 10);
+        $out->result = [];
+
         foreach ($resources as $resource) {
-            $out[] = new Resource($resource);
+            $out->result[] = new Resource($resource);
         }
 
         return $out;
@@ -45,7 +48,7 @@ class ResourceController
 
     public function getResourcesByAuthor()
     {
-        $out = [];
+        $out = new \stdClass();
 
         if (Req::checkIdParam()) {
             $resources = $this->database->getResourcesByUser(Req::id(), Req::page());
@@ -54,8 +57,11 @@ class ResourceController
                 return NULL;
             }
 
+            $out->pagination = new Pagination(count($resources), 10, (Req::page() - 1) * 10);
+            $out->result = [];
+
             foreach ($resources as $resource) {
-                $out[] = new Resource($resource);
+                $out->result[] = new Resource($resource);
             }
         }
 
