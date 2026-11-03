@@ -10,6 +10,8 @@ This project aims to safely expose information from the [SpigotMC](https://spigo
 | listResourceCategories | get information about available resource categories                                                    |
 | getResourceUpdate      | get information about a specific resource update by its id                                             |
 | getResourceUpdates     | get information about all of the updates for a specific resource by the resource id                    |
+| getResourceVersion     | get information about a specific resource version by its id                                            |
+| getResourceVersions    | get information about all versions of a specific resource by the resource id, including versions without an update |
 | getAuthor              | get information about an author by the user id                                                         |
 | findAuthor             | get information about an author by the username (**exact username match only**)                        |
 
@@ -398,6 +400,59 @@ All requests must currently be sent via **GET** to https://api.spigotmc.org/simp
     "post_date":1366884000,  
     "title":"Metrics",
     "message":"Added Metrics"
+  }
+]
+```
+
+#### getResourceVersion
+##### Parameters:
+| name 	| type 	| required 	| default 	| description                                                                 	|
+|------	|------	|----------	|---------	|-----------------------------------------------------------------------------	|
+| id  	| int  	| yes       | none    	| The id of the **resource _version_** to retrieve (see `getResourceVersions`) 	|
+##### Request: https://api.spigotmc.org/simple/0.2/index.php?action=getResourceVersion&id=348709
+##### Response:
+```json
+{
+  "id":"348709",
+  "resource_id":"6245",
+  "update_id":"352711",
+  "version":"2.10.9",
+  "download_count":"282429",
+  "release_date":"1596535200",
+  "external_download_url":""
+}
+```
+
+#### getResourceVersions
+Unlike `getResourceUpdates`, this action returns every visible version of a resource, regardless of whether an update exists for it (e.g. the initial version or versions released without an update message). `update_id` is `null` for versions without a visible update.
+##### Parameters:
+| name 	| type 	| required 	| default 	| description                                                                 	|
+|------	|------	|----------	|---------	|-----------------------------------------------------------------------------	|
+| id  	| int  	| yes       | none    	| The id of the resource for which to retrieve versions                         |
+| page 	| int  	| no       	| 1       	| The page number to retrieve. Items are paginated at 10 results per page.    	 |
+| order 	     | string 	 | no       	| id       	  | Field to order the results by.                                                |
+| direction 	 | string 	 | no       	| ASC       	 | Direction to order the results by.                                            |
+##### Request: https://api.spigotmc.org/simple/0.2/index.php?action=getResourceVersions&id=2&page=1
+##### Response (truncated):
+```json
+[
+  {
+    "id":"2",
+    "resource_id":"2",
+    "update_id":"2",
+    "version":"1.0",
+    "download_count":"251",
+    "release_date":"1364382000",
+    "external_download_url":""
+  },
+  {
+    "id":"18",
+    "resource_id":"2",
+    "update_id":null,
+    "version":"1.1.0",
+    "download_count":"120",
+    "release_date":"1364425200",
+    "external_download_url":""
   }
 ]
 ```

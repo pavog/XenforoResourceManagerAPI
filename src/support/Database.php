@@ -156,6 +156,36 @@ class Database
         return NULL;
     }
 
+    public function getResourceVersion($version_id)
+    {
+        if (!is_null($this->conn)) {
+            $versionStmt = $this->_resource_version('AND rv.resource_version_id = :resource_version_id');
+            $versionStmt->bindParam(':resource_version_id', $version_id);
+
+            if ($versionStmt->execute()) {
+                return $versionStmt->fetch();
+            }
+        }
+
+        return NULL;
+    }
+
+    public function getResourceVersions($resource_id, $page, $order = null, $direction = null)
+    {
+        $page = $page == 1 ? 0 : 10 * ($page - 1);
+
+        if (!is_null($this->conn)) {
+            $versionsStmt = $this->_resource_version('AND rv.resource_id = :resource_id', 10, $page, $order, $direction);
+            $versionsStmt->bindParam(':resource_id', $resource_id);
+
+            if ($versionsStmt->execute()) {
+                return $versionsStmt->fetchAll();
+            }
+        }
+
+        return NULL;
+    }
+
     public function getUser($user_id)
     {
         if (!is_null($this->conn)) {
@@ -295,6 +325,43 @@ class Database
                 %s
             %s
             LIMIT :limit 
+            %s",
+            $additional_where_clauses,
+            $orderClause,
+            $offsetClause
+        );
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':limit', $limit, \PDO::PARAM_INT);
+
+        if (!is_null($offset)) {
+            $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
+        }
+
+        return $stmt;
+    }
+
+    private function _resource_version($additional_where_clauses, $limit = 1, $offset = null, $order = null, $direction = null)
+    {
+        $orderOptions = [
+            'id' => 'rv.resource_version_id',
+            'release_date' => 'rv.release_date',
+            'download_count' => 'rv.download_count',
+        ];
+        $orderClause = $this->prepare_order_options($orderOptions, $order, $direction);
+        $offsetClause = is_null($offset) ? '' : 'OFFSET :offset';
+
+        $query = sprintf(
+            "SELECT rv.resource_version_id, rv.resource_id, ru.resource_update_id, rv.version_string, rv.release_date, rv.download_url, rv.download_count
+            FROM xf_resource_version rv
+                INNER JOIN xf_resource r 
+                    ON r.resource_id = rv.resource_id
+                LEFT JOIN xf_resource_update ru 
+                    ON ru.resource_update_id = rv.resource_update_id AND ru.message_state = 'visible'
+            WHERE rv.version_state = 'visible' AND r.resource_state = 'visible'
+                %s
+            %s
+            LIMIT :limit
             %s",
             $additional_where_clauses,
             $orderClause,

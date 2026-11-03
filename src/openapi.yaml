@@ -171,6 +171,69 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ResourceUpdate'
+  /index.php?action=getResourceVersion:
+    parameters:
+      - name: id
+        description: The resource version ID
+        in: query
+        required: true
+        schema:
+          type: integer
+    get:
+      operationId: getResourceVersion
+      summary: Obtain a specific version of a resource
+      responses:
+        '200':
+          description: An object containing information about a version of a resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceVersion'
+  /index.php?action=getResourceVersions:
+    parameters:
+      - name: id
+        description: The resource ID
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: page
+        description: The page of results to get
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: order
+        description: Field to order the results by
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+            - id
+            - release_date
+            - download_count
+      - name: direction
+        description: Direction to order the results by
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+            - asc
+            - desc
+    get:
+      operationId: getResourceVersions
+      summary: Obtain all the versions of a resource, including versions without an update
+      responses:
+        '200':
+          description: An array containing the collected version information
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResourceVersion'
   /index.php?action=getAuthor:
     parameters:
       - name: id
@@ -304,6 +367,27 @@ components:
           type: string
         message:
           type: string
+    ResourceVersion:
+      type: object
+      properties:
+        id:
+          type: integer
+        resource_id:
+          type: integer
+        update_id:
+          type: integer
+          nullable: true
+          description: "ID of the associated resource update, null if the version has no visible update"
+        version:
+          type: string
+        download_count:
+          type: integer
+        release_date:
+          type: integer
+          description: "release date as timestamp (in seconds)"
+        external_download_url:
+          type: string
+          default: ""
     ResourceCategory:
       type: object
       properties:

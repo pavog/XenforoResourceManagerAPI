@@ -5,6 +5,7 @@ use XFRM\Controller\AuthorController as AuthorController;
 use XFRM\Controller\ResourceCategoryController as ResourceCategoryController;
 use XFRM\Controller\ResourceController as ResourceController;
 use XFRM\Controller\ResourceUpdateController as ResourceUpdateController;
+use XFRM\Controller\ResourceVersionController as ResourceVersionController;
 use XFRM\Object\Error as Error;
 use XFRM\Support\Database as Database;
 
@@ -14,6 +15,7 @@ class Router
     private $resourceController;
     private $resourceCategoryController;
     private $resourceUpdateController;
+    private $resourceVersionController;
     private $authorController;
 
     public function __construct()
@@ -25,6 +27,8 @@ class Router
             "listResourceCategories",
             "getResourceUpdate",
             "getResourceUpdates",
+            "getResourceVersion",
+            "getResourceVersions",
             "getAuthor",
             "findAuthor"
         ];
@@ -34,6 +38,7 @@ class Router
         $this->resourceController = new ResourceController($database);
         $this->resourceCategoryController = new ResourceCategoryController($database);
         $this->resourceUpdateController = new ResourceUpdateController($database);
+        $this->resourceVersionController = new ResourceVersionController($database);
         $this->authorController = new AuthorController($database);
     }
 
@@ -78,6 +83,16 @@ class Router
     private function getResourceUpdates()
     {
         return $this->resourceUpdateController->getResourceUpdates();
+    }
+
+    private function getResourceVersion()
+    {
+        return $this->resourceVersionController->getResourceVersion();
+    }
+
+    private function getResourceVersions()
+    {
+        return $this->resourceVersionController->getResourceVersions();
     }
 
     private function getAuthor()

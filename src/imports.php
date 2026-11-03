@@ -9,6 +9,7 @@ require_once(__DIR__ . '/object/Error.php');
 require_once(__DIR__ . '/object/Resource.php');
 require_once(__DIR__ . '/object/ResourceCategory.php');
 require_once(__DIR__ . '/object/ResourceUpdate.php');
+require_once(__DIR__ . '/object/ResourceVersion.php');
 
 require_once(__DIR__ . '/support/Config.php');
 require_once(__DIR__ . '/support/Database.php');
@@ -21,5 +22,6 @@ require_once(__DIR__ . '/controller/AuthorController.php');
 require_once(__DIR__ . '/controller/ResourceController.php');
 require_once(__DIR__ . '/controller/ResourceCategoryController.php');
 require_once(__DIR__ . '/controller/ResourceUpdateController.php');
+require_once(__DIR__ . '/controller/ResourceVersionController.php');
 
 require_once('API.php');
